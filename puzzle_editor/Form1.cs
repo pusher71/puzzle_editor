@@ -13,28 +13,52 @@ namespace puzzle_editor
 {
     public partial class Form1 : Form
     {
-        //public NpgsqlConnection connection = new NpgsqlConnection("Host=localhost;Username=root;Password=abc8734;Database=model");
+        private MySqlConnection conn; //соединение с базой данных
+        private int currentLocation; //текущая просматриваемая локация
+        private int width; //её длина
+        private int height; //её высота
+        private const int step = 20; //шаг сетки
+
         public Form1()
         {
             InitializeComponent();
-
-            Console.WriteLine("Getting Connection ...");
-            MySqlConnection conn = DBUtils.GetDBConnection();
-
+            conn = DBUtils.GetDBConnection();
             try
             {
-                Console.WriteLine("Openning Connection ...");
-
                 conn.Open();
+                MessageBox.Show("Соединение с базой данных установлено", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                Console.WriteLine("Connection successful!");
+                //получить длину и высоту первой локации
+                MySqlCommand cmd = conn.CreateCommand();
+                cmd.CommandText = "SELECT width FROM `model`.`location` WHERE Number = 0";
+
+                drawLocation();
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error: " + e.Message);
+                MessageBox.Show("Соединение с базой данных не установлено.\n" + e.Message, "Информация", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
             }
+            finally
+            {
+                // Закрыть соединение.
+                conn.Close();
+                // Уничтожить объект, освободить ресурс.
+                conn.Dispose();
+            }
+        }
 
-            Console.Read();
+        //подогнать окно под рабочую область
+        private void changeWorkspace()
+        {
+            pictureBox1.Size = new Size(width * step, height * step);
+            Size = new Size(pictureBox1.Size.Width + 186, Math.Max(pictureBox1.Size.Height + 78, 332));
+        }
+
+        //отрисовать текущую локацию
+        private void drawLocation()
+        {
+
         }
     }
 }
