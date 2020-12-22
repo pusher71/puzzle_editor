@@ -47,6 +47,8 @@ namespace puzzle_editor
         private int currentLocation; //текущая просматриваемая локация
         private int width; //её длина
         private int height; //её высота
+        private Point playerPosition; //позиция игрока
+        private Point exitPosition; //позиция выхода
         private int idMax; //максимальный используемый id элемента
 
         private Bitmap image; //изображение локации
@@ -103,7 +105,7 @@ namespace puzzle_editor
         //обновить статус локации
         private void update()
         {
-            getLocationSize();
+            getLocationParams();
             changeWorkspace();
             drawLocation();
             labelNumber.Text = "Локация: " + currentLocation;
@@ -111,8 +113,8 @@ namespace puzzle_editor
             buttonNext.Enabled = currentLocation < locationCount;
         }
 
-        //получить размеры текущей локации и записать их в width, height
-        private void getLocationSize()
+        //получить параметры текущей локации (width, height, playerPosition и exitPosition)
+        private void getLocationParams()
         {
             MySqlCommand cmd = conn.CreateCommand();
             cmd.CommandText = "SELECT * FROM `model`.`location` WHERE Number = " + currentLocation;
@@ -123,6 +125,12 @@ namespace puzzle_editor
                     reader.Read();
                     width = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("Width")));
                     height = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("Height")));
+                    playerPosition = new Point(
+                        Convert.ToInt32(reader.GetValue(reader.GetOrdinal("PlayerX"))),
+                        Convert.ToInt32(reader.GetValue(reader.GetOrdinal("PlayerY"))) );
+                    exitPosition = new Point(
+                        Convert.ToInt32(reader.GetValue(reader.GetOrdinal("ExitX"))),
+                        Convert.ToInt32(reader.GetValue(reader.GetOrdinal("ExitY"))));
                 }
             }
         }
@@ -236,10 +244,16 @@ namespace puzzle_editor
         {
             image = new Bitmap(width * step, height * step);
             g1 = Graphics.FromImage(image);
-            g1.Clear(Color.White);
+            g1.Clear(Color.Black);
+
+            //отрисовать игровые элементы
             for (int x = 0; x < width; x++)
                 for (int y = 0; y < height; y++)
                     drawItem(x, y);
+
+            //отрисовать игрока и выход
+            g1.DrawImage(Properties.Resources.player, playerPosition.X * step, playerPosition.Y * step);
+            g1.DrawImage(Properties.Resources.exit, exitPosition.X * step, exitPosition.Y * step);
 
             pictureBox1.Image = image;
         }
@@ -250,9 +264,31 @@ namespace puzzle_editor
             //получить элемент по координатам
             GameElement ge = getGameElement(x, y);
 
-            //обработать текстуру в зависимости от параметров ge...
+            //обработать текстуру в зависимости от параметров ge
             Bitmap pict = new Bitmap(elementTextures[ge.type]);
-            //...
+            if (ge.type > 2 && ge.type < 7) //если элемент имеет цвет
+            {
+                //перевести цвет в Color
+                ColorConverter cc = new ColorConverter();
+                Color color = (Color)cc.ConvertFromString(ge.color);
+
+                //применить цветовой фильтр
+                for (int i = 0; i < pict.Width; i++)
+                    for (int j = 0; j < pict.Height; j++)
+                    {
+                        Color c = pict.GetPixel(i, j);
+                        pict.SetPixel(i, j, Color.FromArgb(255, c.R * color.R / 255, c.G * color.G / 255, c.B * color.B / 255));
+                    }
+            }
+            else if (ge.type == 7) //если элемент является лазерным излучателем
+            {
+                //повернуть текстуру в зависимости от направления...
+                //написать значение энергии на текстуре
+            }
+            else if (ge.type == 8) //если элемент является аптечкой
+            {
+                //написать значение размера на текстуре
+            }
 
             //отрисовать элемент на поле
             g1.DrawImage(pict, x * step, y * step);
@@ -351,6 +387,42 @@ namespace puzzle_editor
         {
             if (colorDialog.ShowDialog() == DialogResult.OK)
                 buttonColor.BackColor = colorDialog.Color;
+        }
+
+        private void toolWallsCount_Click(object sender, EventArgs e)
+        {
+            string result = ""; //результирующая строка
+            MySqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = Properties.Resources.GetWallsCount;
+            using (DbDataReader reader = cmd.ExecuteReader())
+            {
+                if (reader.HasRows)
+                {
+                    int counter = 1;
+                    while (reader.Read())
+                        result += counter++ + ": " + reader.GetString(0) + "\n";
+                }
+            }
+
+            MessageBox.Show(result, "Результат", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void toolGetIO_Click(object sender, EventArgs e)
+        {
+            string result = ""; //результирующая строка
+            MySqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = Properties.Resources.GetLocationIO;
+            using (DbDataReader reader = cmd.ExecuteReader())
+            {
+                if (reader.HasRows)
+                {
+                    int counter = 1;
+                    while (reader.Read())
+                        result += counter++ + ": Player(" + reader.GetString(0) + "; " + reader.GetString(1) + "), Exit(" + reader.GetString(2) + "; " + reader.GetString(3) + ")\n";
+                }
+            }
+
+            MessageBox.Show(result, "Результат", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

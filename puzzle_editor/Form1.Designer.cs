@@ -32,6 +32,9 @@
             this.toolLocation = new System.Windows.Forms.ToolStripMenuItem();
             this.toolLocationAdd = new System.Windows.Forms.ToolStripMenuItem();
             this.toolLocationDelete = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolAnalysis = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolWallsCount = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolGetIO = new System.Windows.Forms.ToolStripMenuItem();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -45,12 +48,9 @@
             this.buttonColor = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.labelNumber = new System.Windows.Forms.Label();
-            this.buttonPrev = new System.Windows.Forms.Button();
             this.buttonNext = new System.Windows.Forms.Button();
-            this.toolAnalysis = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolWallsCount = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolGetIO = new System.Windows.Forms.ToolStripMenuItem();
+            this.buttonPrev = new System.Windows.Forms.Button();
+            this.labelNumber = new System.Windows.Forms.Label();
             this.colorDialog = new System.Windows.Forms.ColorDialog();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -83,16 +83,39 @@
             // toolLocationAdd
             // 
             this.toolLocationAdd.Name = "toolLocationAdd";
-            this.toolLocationAdd.Size = new System.Drawing.Size(180, 22);
+            this.toolLocationAdd.Size = new System.Drawing.Size(171, 22);
             this.toolLocationAdd.Text = "Добавить...";
             this.toolLocationAdd.Click += new System.EventHandler(this.toolLocationAdd_Click);
             // 
             // toolLocationDelete
             // 
             this.toolLocationDelete.Name = "toolLocationDelete";
-            this.toolLocationDelete.Size = new System.Drawing.Size(180, 22);
+            this.toolLocationDelete.Size = new System.Drawing.Size(171, 22);
             this.toolLocationDelete.Text = "Удалить текущую";
             this.toolLocationDelete.Click += new System.EventHandler(this.toolLocationDelete_Click);
+            // 
+            // toolAnalysis
+            // 
+            this.toolAnalysis.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolWallsCount,
+            this.toolGetIO});
+            this.toolAnalysis.Name = "toolAnalysis";
+            this.toolAnalysis.Size = new System.Drawing.Size(78, 20);
+            this.toolAnalysis.Text = "Аналитика";
+            // 
+            // toolWallsCount
+            // 
+            this.toolWallsCount.Name = "toolWallsCount";
+            this.toolWallsCount.Size = new System.Drawing.Size(369, 22);
+            this.toolWallsCount.Text = "Получить количество стен в каждом уровне";
+            this.toolWallsCount.Click += new System.EventHandler(this.toolWallsCount_Click);
+            // 
+            // toolGetIO
+            // 
+            this.toolGetIO.Name = "toolGetIO";
+            this.toolGetIO.Size = new System.Drawing.Size(369, 22);
+            this.toolGetIO.Text = "Получить позиции игрока и выхода в каждом уровне";
+            this.toolGetIO.Click += new System.EventHandler(this.toolGetIO_Click);
             // 
             // listBox1
             // 
@@ -254,14 +277,15 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Навигация";
             // 
-            // labelNumber
+            // buttonNext
             // 
-            this.labelNumber.AutoSize = true;
-            this.labelNumber.Location = new System.Drawing.Point(33, 16);
-            this.labelNumber.Name = "labelNumber";
-            this.labelNumber.Size = new System.Drawing.Size(63, 13);
-            this.labelNumber.TabIndex = 0;
-            this.labelNumber.Text = "Локация: 1";
+            this.buttonNext.Location = new System.Drawing.Point(73, 32);
+            this.buttonNext.Name = "buttonNext";
+            this.buttonNext.Size = new System.Drawing.Size(61, 23);
+            this.buttonNext.TabIndex = 2;
+            this.buttonNext.Text = ">";
+            this.buttonNext.UseVisualStyleBackColor = true;
+            this.buttonNext.Click += new System.EventHandler(this.buttonNext_Click);
             // 
             // buttonPrev
             // 
@@ -273,36 +297,14 @@
             this.buttonPrev.UseVisualStyleBackColor = true;
             this.buttonPrev.Click += new System.EventHandler(this.buttonPrev_Click);
             // 
-            // buttonNext
+            // labelNumber
             // 
-            this.buttonNext.Location = new System.Drawing.Point(73, 32);
-            this.buttonNext.Name = "buttonNext";
-            this.buttonNext.Size = new System.Drawing.Size(61, 23);
-            this.buttonNext.TabIndex = 2;
-            this.buttonNext.Text = ">";
-            this.buttonNext.UseVisualStyleBackColor = true;
-            this.buttonNext.Click += new System.EventHandler(this.buttonNext_Click);
-            // 
-            // toolAnalysis
-            // 
-            this.toolAnalysis.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolWallsCount,
-            this.toolGetIO});
-            this.toolAnalysis.Name = "toolAnalysis";
-            this.toolAnalysis.Size = new System.Drawing.Size(78, 20);
-            this.toolAnalysis.Text = "Аналитика";
-            // 
-            // toolWallsCount
-            // 
-            this.toolWallsCount.Name = "toolWallsCount";
-            this.toolWallsCount.Size = new System.Drawing.Size(369, 22);
-            this.toolWallsCount.Text = "Получить количество стен в каждом уровне";
-            // 
-            // toolGetIO
-            // 
-            this.toolGetIO.Name = "toolGetIO";
-            this.toolGetIO.Size = new System.Drawing.Size(369, 22);
-            this.toolGetIO.Text = "Получить позиции игрока и выхода в каждом уровне";
+            this.labelNumber.AutoSize = true;
+            this.labelNumber.Location = new System.Drawing.Point(33, 16);
+            this.labelNumber.Name = "labelNumber";
+            this.labelNumber.Size = new System.Drawing.Size(63, 13);
+            this.labelNumber.TabIndex = 0;
+            this.labelNumber.Text = "Локация: 1";
             // 
             // colorDialog
             // 

@@ -111,6 +111,16 @@ namespace puzzle_editor.Properties {
         }
         
         /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap exit {
+            get {
+                object obj = ResourceManager.GetObject("exit", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на SELECT 
         ///    w.ElementId AS `WallId`, c.ElementId AS `CubeId`, k.ElementId AS `KeyId`, k.Color AS `KeyColor`,
         ///    d.ElementId AS `DoorId`, d.Color AS `DoorColor`, b.ElementId AS `ButtonId`, b.Color AS `ButtonColor`,
@@ -122,6 +132,24 @@ namespace puzzle_editor.Properties {
         internal static string GetElement {
             get {
                 return ResourceManager.GetString("GetElement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на SELECT PlayerX, PlayerY, ExitX, ExitY FROM `model`.`location`;.
+        /// </summary>
+        internal static string GetLocationIO {
+            get {
+                return ResourceManager.GetString("GetLocationIO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на SELECT COUNT(*) FROM `model`.`gameelement` JOIN `model`.`wall` ON `model`.`gameelement`.`id` = `model`.`wall`.`ElementId` GROUP BY LocationId;.
+        /// </summary>
+        internal static string GetWallsCount {
+            get {
+                return ResourceManager.GetString("GetWallsCount", resourceCulture);
             }
         }
         
@@ -151,6 +179,16 @@ namespace puzzle_editor.Properties {
         internal static System.Drawing.Bitmap medicinechest {
             get {
                 object obj = ResourceManager.GetObject("medicinechest", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap player {
+            get {
+                object obj = ResourceManager.GetObject("player", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

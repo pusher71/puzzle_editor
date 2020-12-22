@@ -158,5 +158,11 @@
   <ItemGroup>
     <None Include="bin\Debug\cube.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\player.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\exit.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
