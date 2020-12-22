@@ -38,3 +38,4 @@ C:\Users\Acer\source\repos\puzzle_editor\puzzle_editor\bin\Debug\K4os.Compressio
 C:\Users\Acer\source\repos\puzzle_editor\puzzle_editor\bin\Debug\K4os.Hash.xxHash.dll
 C:\Users\Acer\source\repos\puzzle_editor\puzzle_editor\bin\Debug\MySql.Data.xml
 C:\Users\Acer\source\repos\puzzle_editor\puzzle_editor\obj\Debug\puzzle_editor.Form1.resources
+C:\Users\Acer\source\repos\puzzle_editor\puzzle_editor\obj\Debug\puzzle_editor.Form2.resources
