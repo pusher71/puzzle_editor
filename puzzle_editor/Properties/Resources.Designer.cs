@@ -194,6 +194,15 @@ namespace puzzle_editor.Properties {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на abc8734.
+        /// </summary>
+        internal static string String1 {
+            get {
+                return ResourceManager.GetString("String1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap wall {

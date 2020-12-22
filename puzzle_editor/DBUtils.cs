@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
 
 namespace puzzle_editor
 {
@@ -15,9 +10,9 @@ namespace puzzle_editor
             int port = 3306;
             string database = "model";
             string username = "root";
-            string password = "abc8734";
+            string password = "root1234";
 
-            return DBMySQLUtils.GetDBConnection(host, port, database, username, password);
+            return DBMySQLUtils.GetDBConnection(host, port, database, username, Properties.Resources.String1);
         }
     }
 }
