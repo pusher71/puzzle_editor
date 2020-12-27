@@ -153,6 +153,23 @@ FROM `model`.`gameelement` A
         LEFT JOIN `model`.`medicinechest` m ON A.id = m.ElementId</value>
     <comment>Получить параметры объекта по заданным координатам</comment>
   </data>
+  <data name="GetElements" xml:space="preserve">
+    <value>SELECT 
+    X, Y, w.ElementId AS `WallId`, c.ElementId AS `CubeId`, k.ElementId AS `KeyId`, k.Color AS `KeyColor`,
+    d.ElementId AS `DoorId`, d.Color AS `DoorColor`, b.ElementId AS `ButtonId`, b.Color AS `ButtonColor`,
+    r.ElementId AS `BarrierId`, r.Color AS `BarrierColor`, e.ElementId AS `LazerEmitterId`, e.Direction AS `LazerDirection`,
+    e.Energy AS `LazerEnergy`, m.ElementId AS `MedicineChestId`, m.Size AS `MedicineSize`
+FROM `model`.`gameelement` A
+        LEFT JOIN `model`.`wall` w ON A.id = w.ElementId
+        LEFT JOIN `model`.`cube` c ON A.id = c.ElementId
+        LEFT JOIN `model`.`key` k ON A.id = k.ElementId
+        LEFT JOIN `model`.`door` d ON A.id = d.ElementId
+        LEFT JOIN `model`.`button` b ON A.id = b.ElementId
+        LEFT JOIN `model`.`barrier` r ON A.id = r.ElementId
+        LEFT JOIN `model`.`lazeremitter` e ON A.id = e.ElementId
+        LEFT JOIN `model`.`medicinechest` m ON A.id = m.ElementId</value>
+    <comment>Получить все игровые элементы с параметрами</comment>
+  </data>
   <data name="GetLocationIO" xml:space="preserve">
     <value>SELECT PlayerX, PlayerY, ExitX, ExitY FROM `model`.`location`;</value>
     <comment>Получить позиции игрока и выхода в каждой локации</comment>

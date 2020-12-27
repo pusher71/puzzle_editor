@@ -136,6 +136,21 @@ namespace puzzle_editor.Properties {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на SELECT 
+        ///    X, Y, w.ElementId AS `WallId`, c.ElementId AS `CubeId`, k.ElementId AS `KeyId`, k.Color AS `KeyColor`,
+        ///    d.ElementId AS `DoorId`, d.Color AS `DoorColor`, b.ElementId AS `ButtonId`, b.Color AS `ButtonColor`,
+        ///    r.ElementId AS `BarrierId`, r.Color AS `BarrierColor`, e.ElementId AS `LazerEmitterId`, e.Direction AS `LazerDirection`,
+        ///    e.Energy AS `LazerEnergy`, m.ElementId AS `MedicineChestId`, m.Size AS `MedicineSize`
+        ///FROM `model`.`gameelement` A
+        ///        LEFT JOIN `model`.`wall` w ON A.id = w. [остаток строки не уместился]&quot;;.
+        /// </summary>
+        internal static string GetElements {
+            get {
+                return ResourceManager.GetString("GetElements", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на SELECT PlayerX, PlayerY, ExitX, ExitY FROM `model`.`location`;.
         /// </summary>
         internal static string GetLocationIO {
