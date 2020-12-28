@@ -84,7 +84,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DBMySQLUtils.cs" />
     <Compile Include="DBUtils.cs" />
     <Compile Include="Form2.cs">
       <SubType>Form</SubType>

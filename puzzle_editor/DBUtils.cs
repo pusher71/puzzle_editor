@@ -70,40 +70,18 @@ namespace puzzle_editor
         }
 
         //удалить локацию
-        public void deleteLocation(int number)
+        public void deleteLocation(int locationNumber)
         {
             conn.Open();
 
             using (MySqlCommand cmd = conn.CreateCommand())
             {
-                cmd.CommandText = "DELETE FROM `model`.`location` WHERE Number = " + number;
+                cmd.CommandText = "DELETE FROM `model`.`location` WHERE Number = @locationNumber";
+                cmd.Parameters.AddWithValue("@locationNumber", locationNumber);
                 using (cmd.ExecuteReader()) ;
             }
 
             conn.Close();
-        }
-
-        // получить максимальный id элемента
-        public int getMaxId()
-        {
-            int idMax = 0;
-            conn.Open();
-
-            using (MySqlCommand cmd = conn.CreateCommand())
-            {
-                cmd.CommandText = "SELECT MAX(id) FROM `model`.`gameelement`";
-                using (DbDataReader reader = cmd.ExecuteReader())
-                {
-                    if (reader.HasRows)
-                    {
-                        reader.Read();
-                        idMax = Convert.ToInt32(reader.GetValue(0)) + 1;
-                    }
-                }
-            }
-
-            conn.Close();
-            return idMax;
         }
 
         //получить количество локаций
@@ -138,7 +116,8 @@ namespace puzzle_editor
             //считать параметры локации
             using (MySqlCommand cmd = conn.CreateCommand())
             {
-                cmd.CommandText = "SELECT * FROM `model`.`location` WHERE Number = " + locationNumber;
+                cmd.CommandText = "SELECT * FROM `model`.`location` WHERE Number = @locationNumber";
+                cmd.Parameters.AddWithValue("@locationNumber", locationNumber);
                 using (DbDataReader reader = cmd.ExecuteReader())
                 {
                     if (reader.HasRows)
@@ -268,33 +247,40 @@ namespace puzzle_editor
                         switch (ge.type)
                         {
                             case 1:
-                                command = "CALL CreateWall(" + locationNumber + ", " + x + ", " + y + ");";
+                                command = "CALL CreateWall(@locationNumber, @X, @Y);";
                                 break;
                             case 2:
-                                command = "CALL CreateCube(" + locationNumber + ", " + x + ", " + y + ");";
+                                command = "CALL CreateCube(@locationNumber, @X, @Y);";
                                 break;
                             case 3:
-                                command = "CALL CreateKey(" + locationNumber + ", " + x + ", " + y + ", '" + ge.color + "');";
+                                command = "CALL CreateKey(@locationNumber, @X, @Y, @color);";
                                 break;
                             case 4:
-                                command = "CALL CreateDoor(" + locationNumber + ", " + x + ", " + y + ", '" + ge.color + "');";
+                                command = "CALL CreateDoor(@locationNumber, @X, @Y, @color);";
                                 break;
                             case 5:
-                                command = "CALL CreateButton(" + locationNumber + ", " + x + ", " + y + ", '" + ge.color + "');";
+                                command = "CALL CreateButton(@locationNumber, @X, @Y, @color);";
                                 break;
                             case 6:
-                                command = "CALL CreateBarrier(" + locationNumber + ", " + x + ", " + y + ", '" + ge.color + "');";
+                                command = "CALL CreateBarrier(@locationNumber, @X, @Y, @color);";
                                 break;
                             case 7:
-                                command = "CALL CreateLazerEmitter(" + locationNumber + ", " + x + ", " + y + ", " + ge.direction + ", " + ge.energy + ");";
+                                command = "CALL CreateLazerEmitter(@locationNumber, @X, @Y, @direction, @energy);";
                                 break;
                             case 8:
-                                command = "CALL CreateMedicineChest(" + locationNumber + ", " + x + ", " + y + ", " + ge.size + ");";
+                                command = "CALL CreateMedicineChest(@locationNumber, @X, @Y, @size);";
                                 break;
                         }
                         using (MySqlCommand cmd = conn.CreateCommand())
                         {
                             cmd.CommandText = command;
+                            cmd.Parameters.AddWithValue("@locationNumber", locationNumber);
+                            cmd.Parameters.AddWithValue("@X", x);
+                            cmd.Parameters.AddWithValue("@Y", y);
+                            cmd.Parameters.AddWithValue("@color", ge.color);
+                            cmd.Parameters.AddWithValue("@direction", ge.direction);
+                            cmd.Parameters.AddWithValue("@energy", ge.energy);
+                            cmd.Parameters.AddWithValue("@size", ge.size);
                             using (cmd.ExecuteReader()) ;
                         }
                     }

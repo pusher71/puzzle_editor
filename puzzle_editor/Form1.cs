@@ -193,13 +193,9 @@ namespace puzzle_editor
         {
             if (MessageBox.Show("Вы уверены?", "Удалить локацию", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
             {
-                //удалить текущую локацию
-                db.deleteLocation(locationNumber);
-
-                //декрементировать счётчик локаций
-                locationCount--;
-                if (locationNumber > locationCount)
-                    locationNumber = locationCount; //ограничить номер текущей локации
+                db.deleteLocation(locationNumber); //удалить текущую локацию
+                locationCount--; //декрементировать счётчик локаций
+                locationNumber = locationCount; //ограничить номер текущей локации
 
                 update();
             }
