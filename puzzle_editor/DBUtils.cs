@@ -32,6 +32,11 @@ namespace puzzle_editor
             catch (Exception e)
             {
                 MessageBox.Show("Соединение с базой данных не установлено.\n" + e.Message, "Информация", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                //закрыть соединение и выйти
+                conn.Close();
+                Application.Exit();
+
             }
             finally
             {

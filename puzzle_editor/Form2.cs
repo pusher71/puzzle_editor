@@ -25,7 +25,19 @@ namespace puzzle_editor
 
         private void buttonOK_Click(object sender, EventArgs e)
         {
-            if (textBoxName.Text.Length > 0)
+            //проверить правильность введённых данных
+            if (textBoxName.Text.Length == 0)
+                MessageBox.Show("Задайте название локации!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            else if (numericPlayerX.Value >= numericWidth.Value ||
+                    numericPlayerY.Value >= numericHeight.Value)
+                MessageBox.Show("Игрок находится за пределами локации!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            else if (numericExitX.Value >= numericWidth.Value ||
+                    numericExitY.Value >= numericHeight.Value)
+                MessageBox.Show("Выход находится за пределами локации!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            else if (numericPlayerX.Value == numericExitX.Value &&
+                    numericPlayerY.Value == numericExitY.Value)
+                MessageBox.Show("Игрок и выход находятся на одной позиции!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            else
             {
                 Form1 ifrm = Owner as Form1;
 
@@ -39,12 +51,13 @@ namespace puzzle_editor
                 location.exitX = (int)numericExitX.Value;
                 location.exitY = (int)numericExitY.Value;
                 location.capacity = (int)numericCapacity.Value;
+
+                //отправить изменённую локацию
                 ifrm.acceptLocation(location);
+
                 ifrm.Enabled = true;
                 Close();
             }
-            else
-                MessageBox.Show("Задайте название локации!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)
