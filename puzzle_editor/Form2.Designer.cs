@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.textBoxName = new System.Windows.Forms.TextBox();
-            this.numericTextures = new System.Windows.Forms.NumericUpDown();
             this.numericWidth = new System.Windows.Forms.NumericUpDown();
             this.numericHeight = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
@@ -46,7 +45,7 @@
             this.label7 = new System.Windows.Forms.Label();
             this.buttonOK = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.numericTextures)).BeginInit();
+            this.comboTextures = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericPlayerX)).BeginInit();
@@ -63,31 +62,9 @@
             this.textBoxName.Size = new System.Drawing.Size(120, 20);
             this.textBoxName.TabIndex = 0;
             // 
-            // numericTextures
-            // 
-            this.numericTextures.Location = new System.Drawing.Point(153, 38);
-            this.numericTextures.Maximum = new decimal(new int[] {
-            9,
-            0,
-            0,
-            0});
-            this.numericTextures.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericTextures.Name = "numericTextures";
-            this.numericTextures.Size = new System.Drawing.Size(120, 20);
-            this.numericTextures.TabIndex = 1;
-            this.numericTextures.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
             // numericWidth
             // 
-            this.numericWidth.Location = new System.Drawing.Point(153, 64);
+            this.numericWidth.Location = new System.Drawing.Point(153, 65);
             this.numericWidth.Maximum = new decimal(new int[] {
             60,
             0,
@@ -109,7 +86,7 @@
             // 
             // numericHeight
             // 
-            this.numericHeight.Location = new System.Drawing.Point(153, 90);
+            this.numericHeight.Location = new System.Drawing.Point(153, 91);
             this.numericHeight.Maximum = new decimal(new int[] {
             30,
             0,
@@ -150,7 +127,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 66);
+            this.label3.Location = new System.Drawing.Point(12, 67);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(43, 13);
             this.label3.TabIndex = 6;
@@ -159,7 +136,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 92);
+            this.label4.Location = new System.Drawing.Point(12, 93);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(48, 13);
             this.label4.TabIndex = 7;
@@ -167,7 +144,7 @@
             // 
             // numericPlayerX
             // 
-            this.numericPlayerX.Location = new System.Drawing.Point(153, 116);
+            this.numericPlayerX.Location = new System.Drawing.Point(153, 117);
             this.numericPlayerX.Maximum = new decimal(new int[] {
             59,
             0,
@@ -184,7 +161,7 @@
             // 
             // numericPlayerY
             // 
-            this.numericPlayerY.Location = new System.Drawing.Point(216, 116);
+            this.numericPlayerY.Location = new System.Drawing.Point(216, 117);
             this.numericPlayerY.Maximum = new decimal(new int[] {
             29,
             0,
@@ -202,7 +179,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(12, 118);
+            this.label5.Location = new System.Drawing.Point(12, 119);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(92, 13);
             this.label5.TabIndex = 10;
@@ -211,7 +188,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(12, 144);
+            this.label6.Location = new System.Drawing.Point(12, 145);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(94, 13);
             this.label6.TabIndex = 13;
@@ -219,7 +196,7 @@
             // 
             // numericExitY
             // 
-            this.numericExitY.Location = new System.Drawing.Point(216, 142);
+            this.numericExitY.Location = new System.Drawing.Point(216, 143);
             this.numericExitY.Maximum = new decimal(new int[] {
             29,
             0,
@@ -236,7 +213,7 @@
             // 
             // numericExitX
             // 
-            this.numericExitX.Location = new System.Drawing.Point(153, 142);
+            this.numericExitX.Location = new System.Drawing.Point(153, 143);
             this.numericExitX.Maximum = new decimal(new int[] {
             59,
             0,
@@ -253,14 +230,9 @@
             // 
             // numericCapacity
             // 
-            this.numericCapacity.Location = new System.Drawing.Point(153, 168);
+            this.numericCapacity.Location = new System.Drawing.Point(153, 169);
             this.numericCapacity.Maximum = new decimal(new int[] {
             30,
-            0,
-            0,
-            0});
-            this.numericCapacity.Minimum = new decimal(new int[] {
-            1,
             0,
             0,
             0});
@@ -276,7 +248,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(12, 170);
+            this.label7.Location = new System.Drawing.Point(12, 171);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(135, 13);
             this.label7.TabIndex = 15;
@@ -284,7 +256,7 @@
             // 
             // buttonOK
             // 
-            this.buttonOK.Location = new System.Drawing.Point(117, 194);
+            this.buttonOK.Location = new System.Drawing.Point(117, 195);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 16;
@@ -294,7 +266,7 @@
             // 
             // buttonCancel
             // 
-            this.buttonCancel.Location = new System.Drawing.Point(198, 194);
+            this.buttonCancel.Location = new System.Drawing.Point(198, 195);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 17;
@@ -302,12 +274,29 @@
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
             // 
+            // comboTextures
+            // 
+            this.comboTextures.FormattingEnabled = true;
+            this.comboTextures.Items.AddRange(new object[] {
+            "Лазурный",
+            "Золотистый",
+            "Золотисто-мраморный",
+            "Сиреневый",
+            "Аквамариновый",
+            "Светло-лаймовый"});
+            this.comboTextures.Location = new System.Drawing.Point(153, 38);
+            this.comboTextures.Name = "comboTextures";
+            this.comboTextures.Size = new System.Drawing.Size(120, 21);
+            this.comboTextures.TabIndex = 18;
+            this.comboTextures.Text = "Лазурный";
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(283, 229);
+            this.ClientSize = new System.Drawing.Size(283, 230);
             this.ControlBox = false;
+            this.Controls.Add(this.comboTextures);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOK);
             this.Controls.Add(this.label7);
@@ -324,15 +313,13 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.numericHeight);
             this.Controls.Add(this.numericWidth);
-            this.Controls.Add(this.numericTextures);
             this.Controls.Add(this.textBoxName);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Form2";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Добавить локацию";
-            ((System.ComponentModel.ISupportInitialize)(this.numericTextures)).EndInit();
+            this.Text = "Параметры локации";
             ((System.ComponentModel.ISupportInitialize)(this.numericWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericHeight)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericPlayerX)).EndInit();
@@ -348,7 +335,6 @@
         #endregion
 
         private System.Windows.Forms.TextBox textBoxName;
-        private System.Windows.Forms.NumericUpDown numericTextures;
         private System.Windows.Forms.NumericUpDown numericWidth;
         private System.Windows.Forms.NumericUpDown numericHeight;
         private System.Windows.Forms.Label label1;
@@ -365,5 +351,6 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Button buttonOK;
         private System.Windows.Forms.Button buttonCancel;
+        private System.Windows.Forms.ComboBox comboTextures;
     }
 }

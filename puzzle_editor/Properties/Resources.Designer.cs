@@ -209,6 +209,15 @@ namespace puzzle_editor.Properties {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на UPDATE `model`.`location` SET `Name` = @name, `TextureType` = @textureType, `Width` = @width, `Height` = @height, `PlayerX` = @playerX, `PlayerY` = @playerY, `ExitX` = @exitX, `ExitY` = @exitY, `InventoryCapacity` = @capacity WHERE (`Number` = @locationNumber).
+        /// </summary>
+        internal static string SetLocationParameters {
+            get {
+                return ResourceManager.GetString("SetLocationParameters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на abc8734.
         /// </summary>
         internal static string String1 {

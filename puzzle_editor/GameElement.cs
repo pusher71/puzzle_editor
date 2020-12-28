@@ -1,7 +1,7 @@
 ﻿namespace puzzle_editor
 {
     //игровой элемент на локации
-    struct GameElement
+    public struct GameElement
     {
         public int type; //тип элемента (0 - элемента нет)
         public string color; //цвет

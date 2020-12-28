@@ -27,6 +27,7 @@ namespace puzzle_editor
         private int locationCount; //количество локаций
         private int locationNumber; //номер текущей локации
         private Location location; //текущая локация
+        private bool createOrEdit; //создать локацию или редактировать параметры
 
         private Bitmap image; //изображение локации
         private Graphics g1; //графика с него
@@ -47,21 +48,21 @@ namespace puzzle_editor
             update();
         }
 
-        //обновить статус локации
+        //обновить интерфейс в соответствии с локацией
         private void update()
         {
             location = db.readLocation(locationNumber);
-            changeWorkspace();
             drawLocation();
             labelNumber.Text = "Локация: " + locationNumber;
             buttonPrev.Enabled = locationNumber > 1;
             buttonNext.Enabled = locationNumber < locationCount;
+            toolLocationDelete.Enabled = locationNumber == locationCount;
         }
 
         //подогнать окно под рабочую область
         private void changeWorkspace()
         {
-            pictureBox1.Size = new Size(location.width * step, location.height * step);
+            pictureBox1.Size = new Size(image.Width, image.Height);
             Size = new Size(pictureBox1.Size.Width + 186, Math.Max(pictureBox1.Size.Height + 78, 399));
         }
 
@@ -82,6 +83,7 @@ namespace puzzle_editor
             g1.DrawImage(Properties.Resources.exit, location.exitX * step, location.exitY * step);
 
             pictureBox1.Image = image;
+            changeWorkspace();
         }
 
         //отрисовать заданную позицию в g1
@@ -130,17 +132,22 @@ namespace puzzle_editor
             pictureBox1.Image = image;
         }
 
-        //создать новую локацию
-        public void createLocation(string name, int textureType, int width, int height, int playerX, int playerY, int exitX, int exitY, int capacity)
+        //принять локацию из Form2
+        public void acceptLocation(Location loc)
         {
-            //инкрементировать счётчик локаций
-            locationCount++;
-            locationNumber = locationCount;
+            //если локация добавляется
+            if (!createOrEdit)
+            {
+                //инкрементировать счётчик локаций
+                locationCount++;
+                locationNumber = locationCount;
 
-            //добавить локацию в конец списка
-            db.createLocation(locationNumber, name, textureType, width, height, playerX, playerY, exitX, exitY, capacity);
-
-            update();
+                //добавить локацию в конец списка
+                db.createLocation(locationNumber, loc);
+                update();
+            }
+            else
+                drawLocation();
         }
 
         private void buttonPrev_Click(object sender, EventArgs e)
@@ -157,7 +164,20 @@ namespace puzzle_editor
 
         private void toolLocationAdd_Click(object sender, EventArgs e)
         {
-            Form ifrm = new Form2();
+            //получить параметры новой локации из Form2
+            createOrEdit = false;
+            Location loc = new Location(); //новая локация
+            Form ifrm = new Form2(loc);
+            ifrm.Owner = this;
+            ifrm.Show();
+            Enabled = false;
+        }
+
+        private void toolLocationParams_Click(object sender, EventArgs e)
+        {
+            //обновить параметры локации в Form2
+            createOrEdit = true;
+            Form ifrm = new Form2(location);
             ifrm.Owner = this;
             ifrm.Show();
             Enabled = false;

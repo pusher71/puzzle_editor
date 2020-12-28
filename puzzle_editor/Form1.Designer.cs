@@ -53,6 +53,7 @@
             this.buttonPrev = new System.Windows.Forms.Button();
             this.labelNumber = new System.Windows.Forms.Label();
             this.colorDialog = new System.Windows.Forms.ColorDialog();
+            this.toolLocationParams = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericSize)).BeginInit();
@@ -76,6 +77,7 @@
             // 
             this.toolLocation.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolLocationAdd,
+            this.toolLocationParams,
             this.toolLocationSave,
             this.toolLocationDelete});
             this.toolLocation.Name = "toolLocation";
@@ -85,21 +87,21 @@
             // toolLocationAdd
             // 
             this.toolLocationAdd.Name = "toolLocationAdd";
-            this.toolLocationAdd.Size = new System.Drawing.Size(196, 22);
-            this.toolLocationAdd.Text = "Добавить...";
+            this.toolLocationAdd.Size = new System.Drawing.Size(197, 22);
+            this.toolLocationAdd.Text = "Добавить локацию...";
             this.toolLocationAdd.Click += new System.EventHandler(this.toolLocationAdd_Click);
             // 
             // toolLocationSave
             // 
             this.toolLocationSave.Name = "toolLocationSave";
-            this.toolLocationSave.Size = new System.Drawing.Size(196, 22);
+            this.toolLocationSave.Size = new System.Drawing.Size(197, 22);
             this.toolLocationSave.Text = "Сохранить изменения";
             this.toolLocationSave.Click += new System.EventHandler(this.toolLocationSave_Click);
             // 
             // toolLocationDelete
             // 
             this.toolLocationDelete.Name = "toolLocationDelete";
-            this.toolLocationDelete.Size = new System.Drawing.Size(196, 22);
+            this.toolLocationDelete.Size = new System.Drawing.Size(197, 22);
             this.toolLocationDelete.Text = "Удалить текущую";
             this.toolLocationDelete.Click += new System.EventHandler(this.toolLocationDelete_Click);
             // 
@@ -320,6 +322,13 @@
             // 
             this.colorDialog.Color = System.Drawing.Color.White;
             // 
+            // toolLocationParams
+            // 
+            this.toolLocationParams.Name = "toolLocationParams";
+            this.toolLocationParams.Size = new System.Drawing.Size(197, 22);
+            this.toolLocationParams.Text = "Параметры локации...";
+            this.toolLocationParams.Click += new System.EventHandler(this.toolLocationParams_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -379,6 +388,7 @@
         private System.Windows.Forms.Label labelNumber;
         private System.Windows.Forms.ColorDialog colorDialog;
         private System.Windows.Forms.ToolStripMenuItem toolLocationSave;
+        private System.Windows.Forms.ToolStripMenuItem toolLocationParams;
     }
 }
 

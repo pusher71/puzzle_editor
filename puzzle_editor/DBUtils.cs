@@ -41,7 +41,7 @@ namespace puzzle_editor
         }
 
         //создать локацию
-        public void createLocation(int number, string name, int textureType, int width, int height, int playerX, int playerY, int exitX, int exitY, int capacity)
+        public void createLocation(int number, Location location)
         {
             conn.Open();
 
@@ -49,15 +49,15 @@ namespace puzzle_editor
             {
                 cmd.CommandText = "INSERT INTO `model`.`location` (`Number`, `Name`, `TextureType`, `Width`, `Height`, `PlayerX`, `PlayerY`, `ExitX`, `ExitY`, `InventoryCapacity`) VALUES (@number, @name, @textureType, @width, @height, @playerX, @playerY, @exitX, @exitY, @capacity);";
                 cmd.Parameters.AddWithValue("@number", number);
-                cmd.Parameters.AddWithValue("@name", name);
-                cmd.Parameters.AddWithValue("@textureType", textureType);
-                cmd.Parameters.AddWithValue("@width", width);
-                cmd.Parameters.AddWithValue("@height", height);
-                cmd.Parameters.AddWithValue("@playerX", playerX);
-                cmd.Parameters.AddWithValue("@playerY", playerY);
-                cmd.Parameters.AddWithValue("@exitX", exitX);
-                cmd.Parameters.AddWithValue("@exitY", exitY);
-                cmd.Parameters.AddWithValue("@capacity", capacity);
+                cmd.Parameters.AddWithValue("@name", location.name);
+                cmd.Parameters.AddWithValue("@textureType", location.textureType);
+                cmd.Parameters.AddWithValue("@width", location.width);
+                cmd.Parameters.AddWithValue("@height", location.height);
+                cmd.Parameters.AddWithValue("@playerX", location.playerX);
+                cmd.Parameters.AddWithValue("@playerY", location.playerY);
+                cmd.Parameters.AddWithValue("@exitX", location.exitX);
+                cmd.Parameters.AddWithValue("@exitY", location.exitY);
+                cmd.Parameters.AddWithValue("@capacity", location.capacity);
                 using (cmd.ExecuteReader()) ;
             }
 
@@ -124,7 +124,7 @@ namespace puzzle_editor
             return locationCount;
         }
 
-        //считать локацию в локальный массив
+        //считать локацию из базы данных
         public Location readLocation(int locationNumber)
         {
             Location location = new Location();
@@ -139,18 +139,20 @@ namespace puzzle_editor
                     if (reader.HasRows)
                     {
                         reader.Read();
+                        location.name = reader.GetString(reader.GetOrdinal("Name"));
+                        location.textureType = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("TextureType")));
                         location.width = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("Width")));
                         location.height = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("Height")));
                         location.playerX = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("PlayerX")));
                         location.playerY = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("PlayerY")));
                         location.exitX = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("ExitX")));
                         location.exitY = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("ExitY")));
+                        location.capacity = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("InventoryCapacity")));
                     }
                 }
             }
 
             //считать массив локации
-            location.levelArray = new GameElement[location.width, location.height];
             using (MySqlCommand cmd = conn.CreateCommand())
             {
                 cmd.CommandText = Properties.Resources.GetElements + " WHERE LocationId = @locationNumber";
@@ -213,10 +215,27 @@ namespace puzzle_editor
             return location;
         }
 
-        //записать локацию из локального массива в базу данных
+        //записать локацию в базу данных
         public void writeLocation(int locationNumber, Location location)
         {
             conn.Open();
+
+            //записать параметры локации
+            using (MySqlCommand cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = Properties.Resources.SetLocationParameters;
+                cmd.Parameters.AddWithValue("@name", location.name);
+                cmd.Parameters.AddWithValue("@textureType", location.textureType);
+                cmd.Parameters.AddWithValue("@width", location.width);
+                cmd.Parameters.AddWithValue("@height", location.height);
+                cmd.Parameters.AddWithValue("@playerX", location.playerX);
+                cmd.Parameters.AddWithValue("@playerY", location.playerY);
+                cmd.Parameters.AddWithValue("@exitX", location.exitX);
+                cmd.Parameters.AddWithValue("@exitY", location.exitY);
+                cmd.Parameters.AddWithValue("@capacity", location.capacity);
+                cmd.Parameters.AddWithValue("@locationNumber", locationNumber);
+                using (cmd.ExecuteReader()) ;
+            }
 
             //очистить поле локации в базе данных
             using (MySqlCommand cmd = conn.CreateCommand())

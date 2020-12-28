@@ -5,9 +5,22 @@ namespace puzzle_editor
 {
     public partial class Form2 : Form
     {
-        public Form2()
+        private Location location; //ссылка на локацию
+        public Form2(Location loc)
         {
             InitializeComponent();
+            location = loc;
+
+            //перенести параметры из локации в поля ввода
+            textBoxName.Text = location.name;
+            comboTextures.SelectedIndex = location.textureType;
+            numericWidth.Value = location.width;
+            numericHeight.Value = location.height;
+            numericPlayerX.Value = location.playerX;
+            numericPlayerY.Value = location.playerY;
+            numericExitX.Value = location.exitX;
+            numericExitY.Value = location.exitY;
+            numericCapacity.Value = location.capacity;
         }
 
         private void buttonOK_Click(object sender, EventArgs e)
@@ -15,8 +28,18 @@ namespace puzzle_editor
             if (textBoxName.Text.Length > 0)
             {
                 Form1 ifrm = Owner as Form1;
-                ifrm.createLocation(textBoxName.Text, (int)numericTextures.Value, (int)numericWidth.Value, (int)numericHeight.Value,
-                    (int)numericPlayerX.Value, (int)numericPlayerY.Value, (int)numericExitX.Value, (int)numericExitY.Value, (int)numericCapacity.Value);
+
+                //перенести параметры из полей ввода в локацию
+                location.name = textBoxName.Text;
+                location.textureType = comboTextures.SelectedIndex;
+                location.width = (int)numericWidth.Value;
+                location.height = (int)numericHeight.Value;
+                location.playerX = (int)numericPlayerX.Value;
+                location.playerY = (int)numericPlayerY.Value;
+                location.exitX = (int)numericExitX.Value;
+                location.exitY = (int)numericExitY.Value;
+                location.capacity = (int)numericCapacity.Value;
+                ifrm.acceptLocation(location);
                 ifrm.Enabled = true;
                 Close();
             }
