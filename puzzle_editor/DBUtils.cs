@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using System.Drawing;
 using System.Data.Common;
 using MySql.Data.MySqlClient;
 
@@ -125,43 +124,13 @@ namespace puzzle_editor
             return locationCount;
         }
 
-        //получить параметры локации (width, height, playerPosition и exitPosition)
-        private void getLocationParams(int locationNumber, out int width, out int height, out Point playerPosition, out Point exitPosition)
+        //считать локацию в локальный массив
+        public Location readLocation(int locationNumber)
         {
-            using (MySqlCommand cmd = conn.CreateCommand())
-            {
-                cmd.CommandText = "SELECT * FROM `model`.`location` WHERE Number = " + locationNumber;
-                using (DbDataReader reader = cmd.ExecuteReader())
-                {
-                    if (reader.HasRows)
-                    {
-                        reader.Read();
-                        width = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("Width")));
-                        height = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("Height")));
-                        playerPosition = new Point(
-                            Convert.ToInt32(reader.GetValue(reader.GetOrdinal("PlayerX"))),
-                            Convert.ToInt32(reader.GetValue(reader.GetOrdinal("PlayerY"))));
-                        exitPosition = new Point(
-                            Convert.ToInt32(reader.GetValue(reader.GetOrdinal("ExitX"))),
-                            Convert.ToInt32(reader.GetValue(reader.GetOrdinal("ExitY"))));
-                    }
-                    else
-                    {
-                        width = -1;
-                        height = -1;
-                        playerPosition = new Point(-1, -1);
-                        exitPosition = new Point(-1, -1);
-                    }
-                }
-            }
-        }
-
-        //получить массив локации с параметрами
-        public GameElement[,] getLocation(int locationNumber, out int width, out int height, out Point playerPosition, out Point exitPosition)
-        {
+            Location location = new Location();
             conn.Open();
 
-            //получить параметры локации
+            //считать параметры локации
             using (MySqlCommand cmd = conn.CreateCommand())
             {
                 cmd.CommandText = "SELECT * FROM `model`.`location` WHERE Number = " + locationNumber;
@@ -170,28 +139,18 @@ namespace puzzle_editor
                     if (reader.HasRows)
                     {
                         reader.Read();
-                        width = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("Width")));
-                        height = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("Height")));
-                        playerPosition = new Point(
-                            Convert.ToInt32(reader.GetValue(reader.GetOrdinal("PlayerX"))),
-                            Convert.ToInt32(reader.GetValue(reader.GetOrdinal("PlayerY"))));
-                        exitPosition = new Point(
-                            Convert.ToInt32(reader.GetValue(reader.GetOrdinal("ExitX"))),
-                            Convert.ToInt32(reader.GetValue(reader.GetOrdinal("ExitY"))));
-                    }
-                    else
-                    {
-                        width = -1;
-                        height = -1;
-                        playerPosition = new Point(-1, -1);
-                        exitPosition = new Point(-1, -1);
+                        location.width = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("Width")));
+                        location.height = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("Height")));
+                        location.playerX = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("PlayerX")));
+                        location.playerY = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("PlayerY")));
+                        location.exitX = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("ExitX")));
+                        location.exitY = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("ExitY")));
                     }
                 }
             }
 
-            GameElement[,] levelArray = new GameElement[width, height];
-
-            //получить массив локации
+            //считать массив локации
+            location.levelArray = new GameElement[location.width, location.height];
             using (MySqlCommand cmd = conn.CreateCommand())
             {
                 cmd.CommandText = Properties.Resources.GetElements + " WHERE LocationId = @locationNumber";
@@ -244,117 +203,80 @@ namespace puzzle_editor
                             }
                             else ge.type = 0;
 
-                            levelArray[x, y] = ge;
+                            location.levelArray[x, y] = ge;
                         }
                     }
                 }
             }
 
             conn.Close();
-            return levelArray;
+            return location;
         }
 
-        //получить игровой элемент с заданной позиции
-        private GameElement getGameElementAt(int locationNumber, int x, int y)
+        //записать локацию из локального массива в базу данных
+        public void writeLocation(int locationNumber, Location location)
         {
-            GameElement ge = new GameElement();
+            conn.Open();
+
+            //очистить поле локации в базе данных
             using (MySqlCommand cmd = conn.CreateCommand())
             {
-                cmd.CommandText = Properties.Resources.GetElement + " WHERE X = " + x + " AND Y = " + y + " and LocationId = " + locationNumber;
-                using (DbDataReader reader = cmd.ExecuteReader())
-                {
-                    if (reader.HasRows)
-                    {
-                        reader.Read();
+                cmd.CommandText = "DELETE FROM `model`.`gameelement` WHERE LocationId = @locationNumber";
+                cmd.Parameters.AddWithValue("@locationNumber", locationNumber);
+                using (cmd.ExecuteReader()) ;
+            }
 
-                        //определить тип элемента и дополнительные параметры
-                        if (!reader.IsDBNull(reader.GetOrdinal("WallId"))) ge.type = 1;
-                        else if (!reader.IsDBNull(reader.GetOrdinal("CubeId"))) ge.type = 2;
-                        else if (!reader.IsDBNull(reader.GetOrdinal("KeyId")))
+            //сбросить счётчик AUTO INCREMENT
+            using (MySqlCommand cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "ALTER TABLE `model`.`gameelement` AUTO_INCREMENT = 1";
+                using (cmd.ExecuteReader()) ;
+            }
+
+            //записать массив локации
+            for (int x = 0; x < location.width; x++)
+                for (int y = 0; y < location.height; y++)
+                {
+                    GameElement ge = location.levelArray[x, y];
+                    if (ge.type != 0)
+                    {
+                        string command = "";
+                        switch (ge.type)
                         {
-                            ge.type = 3;
-                            ge.color = reader.GetString(reader.GetOrdinal("KeyColor"));
+                            case 1:
+                                command = "CALL CreateWall(" + locationNumber + ", " + x + ", " + y + ");";
+                                break;
+                            case 2:
+                                command = "CALL CreateCube(" + locationNumber + ", " + x + ", " + y + ");";
+                                break;
+                            case 3:
+                                command = "CALL CreateKey(" + locationNumber + ", " + x + ", " + y + ", '" + ge.color + "');";
+                                break;
+                            case 4:
+                                command = "CALL CreateDoor(" + locationNumber + ", " + x + ", " + y + ", '" + ge.color + "');";
+                                break;
+                            case 5:
+                                command = "CALL CreateButton(" + locationNumber + ", " + x + ", " + y + ", '" + ge.color + "');";
+                                break;
+                            case 6:
+                                command = "CALL CreateBarrier(" + locationNumber + ", " + x + ", " + y + ", '" + ge.color + "');";
+                                break;
+                            case 7:
+                                command = "CALL CreateLazerEmitter(" + locationNumber + ", " + x + ", " + y + ", " + ge.direction + ", " + ge.energy + ");";
+                                break;
+                            case 8:
+                                command = "CALL CreateMedicineChest(" + locationNumber + ", " + x + ", " + y + ", " + ge.size + ");";
+                                break;
                         }
-                        else if (!reader.IsDBNull(reader.GetOrdinal("DoorId")))
+                        using (MySqlCommand cmd = conn.CreateCommand())
                         {
-                            ge.type = 4;
-                            ge.color = reader.GetString(reader.GetOrdinal("DoorColor"));
+                            cmd.CommandText = command;
+                            using (cmd.ExecuteReader()) ;
                         }
-                        else if (!reader.IsDBNull(reader.GetOrdinal("ButtonId")))
-                        {
-                            ge.type = 5;
-                            ge.color = reader.GetString(reader.GetOrdinal("ButtonColor"));
-                        }
-                        else if (!reader.IsDBNull(reader.GetOrdinal("BarrierId")))
-                        {
-                            ge.type = 6;
-                            ge.color = reader.GetString(reader.GetOrdinal("BarrierColor"));
-                        }
-                        else if (!reader.IsDBNull(reader.GetOrdinal("LazerEmitterId")))
-                        {
-                            ge.type = 7;
-                            ge.direction = reader.GetString(reader.GetOrdinal("LazerDirection"));
-                            ge.energy = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("LazerEnergy")));
-                        }
-                        else if (!reader.IsDBNull(reader.GetOrdinal("MedicineChestId")))
-                        {
-                            ge.type = 8;
-                            ge.size = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("MedicineSize")));
-                        }
-                        else ge.type = 0;
                     }
                 }
-            }
 
-            return ge;
-        }
-
-        //поставить игровой элемент на заданную позицию
-        private void setGameElementAt(GameElement ge, int id, int locationNumber, int x, int y)
-        {
-            string command = "";
-            switch (ge.type)
-            {
-                case 1:
-                    command = "CALL CreateWall(" + id + ", " + locationNumber + ", " + x + ", " + y + ");";
-                    break;
-                case 2:
-                    command = "CALL CreateCube(" + id + ", " + locationNumber + ", " + x + ", " + y + ");";
-                    break;
-                case 3:
-                    command = "CALL CreateKey(" + id + ", " + locationNumber + ", " + x + ", " + y + ", '" + ge.color + "');";
-                    break;
-                case 4:
-                    command = "CALL CreateDoor(" + id + ", " + locationNumber + ", " + x + ", " + y + ", '" + ge.color + "');";
-                    break;
-                case 5:
-                    command = "CALL CreateButton(" + id + ", " + locationNumber + ", " + x + ", " + y + ", '" + ge.color + "');";
-                    break;
-                case 6:
-                    command = "CALL CreateBarrier(" + id + ", " + locationNumber + ", " + x + ", " + y + ", '" + ge.color + "');";
-                    break;
-                case 7:
-                    command = "CALL CreateLazerEmitter(" + id + ", " + locationNumber + ", " + x + ", " + y + ", " + ge.direction + ", " + ge.energy + ");";
-                    break;
-                case 8:
-                    command = "CALL CreateMedicineChest(" + id + ", " + locationNumber + ", " + x + ", " + y + ", " + ge.size + ");";
-                    break;
-            }
-            using (MySqlCommand cmd = conn.CreateCommand())
-            {
-                cmd.CommandText = command;
-                using (cmd.ExecuteReader()) ;
-            }
-        }
-
-        //удалить игровой элемент с заданной позиции
-        private void deleteGameElementAt(int locationNumber, int x, int y)
-        {
-            using (MySqlCommand cmd = conn.CreateCommand())
-            {
-                cmd.CommandText = "CALL DeleteAt(" + locationNumber + ", " + x + ", " + y + ");";
-                using (cmd.ExecuteReader()) ;
-            }
+            conn.Close();
         }
 
         //отобразить количество стен в каждом уровне

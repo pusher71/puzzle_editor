@@ -19,16 +19,14 @@ namespace puzzle_editor
             Properties.Resources.medicinechest
         };
 
+        private static Font font = new Font("Arial", 14); //шрифт для обозначений параметров
+        private static SolidBrush brush = new SolidBrush(Color.Black); //цвет текста
         private const int step = 20; //шаг сетки
 
         private DBUtils db; //ссылка на адаптер к базе данных
         private int locationCount; //количество локаций
-        private int currentLocation; //текущая просматриваемая локация
-        private int width; //её длина
-        private int height; //её высота
-        private Point playerPosition; //позиция игрока
-        private Point exitPosition; //позиция выхода
-        private GameElement[,] levelArray; //массив локации
+        private int locationNumber; //номер текущей локации
+        private Location location; //текущая локация
 
         private Bitmap image; //изображение локации
         private Graphics g1; //графика с него
@@ -36,6 +34,8 @@ namespace puzzle_editor
         public Form1()
         {
             InitializeComponent();
+            listBox1.SelectedIndex = 0;
+
             db = new DBUtils();
             db.SetDBConnection();
 
@@ -43,43 +43,43 @@ namespace puzzle_editor
             locationCount = db.getLocationCount();
 
             //считать первую локацию в локальный массив
-            currentLocation = 1;
+            locationNumber = 1;
             update();
         }
 
         //обновить статус локации
         private void update()
         {
-            levelArray = db.getLocation(currentLocation, out width, out height, out playerPosition, out exitPosition);
+            location = db.readLocation(locationNumber);
             changeWorkspace();
             drawLocation();
-            labelNumber.Text = "Локация: " + currentLocation;
-            buttonPrev.Enabled = currentLocation > 1;
-            buttonNext.Enabled = currentLocation < locationCount;
+            labelNumber.Text = "Локация: " + locationNumber;
+            buttonPrev.Enabled = locationNumber > 1;
+            buttonNext.Enabled = locationNumber < locationCount;
         }
 
         //подогнать окно под рабочую область
         private void changeWorkspace()
         {
-            pictureBox1.Size = new Size(width * step, height * step);
+            pictureBox1.Size = new Size(location.width * step, location.height * step);
             Size = new Size(pictureBox1.Size.Width + 186, Math.Max(pictureBox1.Size.Height + 78, 399));
         }
 
         //отрисовать текущую локацию
         private void drawLocation()
         {
-            image = new Bitmap(width * step, height * step);
+            image = new Bitmap(location.width * step, location.height * step);
             g1 = Graphics.FromImage(image);
             g1.Clear(Color.Black);
 
             //отрисовать игровые элементы
-            for (int x = 0; x < width; x++)
-                for (int y = 0; y < height; y++)
+            for (int x = 0; x < location.width; x++)
+                for (int y = 0; y < location.height; y++)
                     drawItem(x, y);
 
             //отрисовать игрока и выход
-            g1.DrawImage(Properties.Resources.player, playerPosition.X * step, playerPosition.Y * step);
-            g1.DrawImage(Properties.Resources.exit, exitPosition.X * step, exitPosition.Y * step);
+            g1.DrawImage(Properties.Resources.player, location.playerX * step, location.playerY * step);
+            g1.DrawImage(Properties.Resources.exit, location.exitX * step, location.exitY * step);
 
             pictureBox1.Image = image;
         }
@@ -88,7 +88,7 @@ namespace puzzle_editor
         private void drawItem(int x, int y)
         {
             //получить элемент по координатам
-            GameElement ge = levelArray[x, y];
+            GameElement ge = location.levelArray[x, y];
 
             //обработать текстуру в зависимости от параметров ge
             Bitmap pict = new Bitmap(elementTextures[ge.type]);
@@ -108,24 +108,25 @@ namespace puzzle_editor
             }
             else if (ge.type == 7) //если элемент является лазерным излучателем
             {
-                //повернуть текстуру в зависимости от направления...
+                //повернуть текстуру в зависимости от направления
+                if (ge.direction == "north")
+                    pict.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                else if (ge.direction == "east")
+                    pict.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                else if (ge.direction == "south")
+                    pict.RotateFlip(RotateFlipType.Rotate270FlipNone);
+
                 //написать значение энергии на текстуре
+                Graphics.FromImage(pict).DrawString(ge.energy.ToString(), font, brush, 2, -1);
             }
             else if (ge.type == 8) //если элемент является аптечкой
             {
                 //написать значение размера на текстуре
+                Graphics.FromImage(pict).DrawString(ge.size.ToString(), font, brush, 2, -1);
             }
 
             //отрисовать элемент на поле
             g1.DrawImage(pict, x * step, y * step);
-
-            //сетка
-            //if (grid)
-            //{
-            //    g1.DrawLine(pen, positionW, positionH, positionW + lengthW, positionH);
-            //    g1.DrawLine(pen, positionW, positionH, positionW, positionH + lengthH);
-            //}
-
             pictureBox1.Image = image;
         }
 
@@ -134,23 +135,23 @@ namespace puzzle_editor
         {
             //инкрементировать счётчик локаций
             locationCount++;
-            currentLocation = locationCount;
+            locationNumber = locationCount;
 
             //добавить локацию в конец списка
-            db.createLocation(currentLocation, name, textureType, width, height, playerX, playerY, exitX, exitY, capacity);
+            db.createLocation(locationNumber, name, textureType, width, height, playerX, playerY, exitX, exitY, capacity);
 
             update();
         }
 
         private void buttonPrev_Click(object sender, EventArgs e)
         {
-            currentLocation--;
+            locationNumber--;
             update();
         }
 
         private void buttonNext_Click(object sender, EventArgs e)
         {
-            currentLocation++;
+            locationNumber++;
             update();
         }
 
@@ -162,17 +163,24 @@ namespace puzzle_editor
             Enabled = false;
         }
 
+        private void toolLocationSave_Click(object sender, EventArgs e)
+        {
+            //обновить локацию в базе данных
+            db.writeLocation(locationNumber, location);
+        }
+
         private void toolLocationDelete_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Вы уверены?", "Удалить локацию", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
             {
                 //удалить текущую локацию
-                db.deleteLocation(currentLocation);
+                db.deleteLocation(locationNumber);
 
                 //декрементировать счётчик локаций
                 locationCount--;
-                if (currentLocation > locationCount)
-                    currentLocation = locationCount; //ограничить номер текущей локации
+                if (locationNumber > locationCount)
+                    locationNumber = locationCount; //ограничить номер текущей локации
+
                 update();
             }
         }
@@ -186,8 +194,11 @@ namespace puzzle_editor
             int x = cp.X / step;
             int y = cp.Y / step;
 
-            //поставить элемент, если курсор не выпрыгнул за границы
-            if (x >= 0 && y >= 0 && x < width && y < height)
+            //поставить элемент, если курсор не выпрыгнул за границы, и не были задеты игрок и выход
+            if (x >= 0 && y >= 0 &&
+                x < location.width && y < location.height &&
+                !(x == location.playerX && y == location.playerY) &&
+                !(x == location.exitX && y == location.exitY))
             {
                 if (e.Button == MouseButtons.Left) //если нажата ЛКМ
                 {
@@ -201,10 +212,10 @@ namespace puzzle_editor
                     ge.size = (int)numericSize.Value;
 
                     //поставить элемент
-                    levelArray[x, y] = ge;
+                    location.levelArray[x, y] = ge;
                 }
                 else //иначе
-                    levelArray[x, y].type = 0; //удалить элемент
+                    location.levelArray[x, y].type = 0; //удалить элемент
 
                 //отрисовать элемент
                 drawItem(x, y);
@@ -225,6 +236,14 @@ namespace puzzle_editor
         private void toolGetIO_Click(object sender, EventArgs e)
         {
             db.showIO();
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            buttonColor.Enabled = listBox1.SelectedIndex > 1 && listBox1.SelectedIndex < 6;
+            comboDirection.Enabled = listBox1.SelectedIndex == 6;
+            numericEnergy.Enabled = listBox1.SelectedIndex == 6;
+            numericSize.Enabled = listBox1.SelectedIndex == 7;
         }
     }
 }
